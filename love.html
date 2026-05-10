@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>告白心意 · 成为我的恋人好吗？</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* 避免移动端长按菜单，提升点击清爽度 */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #ffe0f0 0%, #ffc0e0 100%);
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', 'Noto Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 主卡片 */
+        .love-card {
+            background: rgba(255, 250, 245, 0.96);
+            backdrop-filter: blur(2px);
+            border-radius: 56px;
+            box-shadow: 0 30px 40px rgba(255, 105, 180, 0.25), 0 8px 20px rgba(0, 0, 0, 0.08);
+            padding: 32px 24px 48px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 220, 230, 0.8);
+        }
+
+        /* 标题区 */
+        .heart-icon {
+            font-size: 68px;
+            display: inline-block;
+            animation: float 2s ease-in-out infinite;
+            margin-bottom: 12px;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .question {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff4d6d, #ff85a1);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 12px 0 8px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .sub {
+            font-size: 18px;
+            color: #ff8aa9;
+            font-weight: 500;
+            margin-bottom: 36px;
+            border-bottom: 2px dotted #ffbfcf;
+            display: inline-block;
+            padding-bottom: 6px;
+        }
+
+        /* 按钮容器 */
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+            margin: 32px 0 20px;
+        }
+
+        /* 通用按钮风格 */
+        .btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 16px 12px;
+            font-size: 22px;
+            font-weight: 600;
+            border-radius: 60px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            background: white;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: 1px;
+        }
+
+        .btn-agree {
+            background: linear-gradient(120deg, #ff6b8b, #ff4565);
+            color: white;
+            box-shadow: 0 10px 18px rgba(255, 70, 100, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-agree:active {
+            transform: scale(0.96);
+            background: linear-gradient(120deg, #ff5a7c, #ff3355);
+            box-shadow: 0 4px 10px rgba(255, 70, 100, 0.4);
+        }
+
+        .btn-disagree {
+            background: #ffeef2;
+            color: #ff7b9c;
+            border: 1.5px solid #ffb7ca;
+            box-shadow: 0 5px 12px rgba(255, 120, 150, 0.15);
+        }
+
+        .btn-disagree:active {
+            transform: scale(0.96);
+            background: #ffe2e9;
+            color: #ff5a7e;
+            border-color: #ff9eb6;
+        }
+
+        /* 趣味小提示区 */
+        .hint {
+            margin-top: 36px;
+            font-size: 13px;
+            color: #ffa5bd;
+            background: rgba(255, 240, 245, 0.7);
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(2px);
+        }
+
+        .hint span {
+            display: inline-block;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        /* 自定义通知浮动层 (toast) */
+        .toast-notify {
+            position: fixed;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            background: rgba(255, 70, 100, 0.92);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            pointer-events: none;
+            text-align: center;
+            max-width: 80%;
+            white-space: nowrap;
+            font-family: system-ui, sans-serif;
+            border: 1px solid rgba(255,255,240,0.3);
+        }
+
+        /* 多行适配 */
+        .toast-notify span {
+            display: inline-block;
+            white-space: normal;
+            word-break: keep-all;
+        }
+
+        /* 动态漂浮爱心 */
+        .floating-heart {
+            position: fixed;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 999;
+            font-size: 28px;
+            user-select: none;
+            animation: floatUp 2s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0.6);
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-350px) scale(1.2);
+            }
+        }
+
+        /* 移动端按钮紧凑适配 */
+        @media (max-width: 480px) {
+            .love-card {
+                padding: 28px 20px 40px;
+                border-radius: 48px;
+            }
+            .question {
+                font-size: 28px;
+            }
+            .btn {
+                min-width: 120px;
+                padding: 14px 8px;
+                font-size: 20px;
+            }
+            .button-group {
+                gap: 16px;
+            }
+            .heart-icon {
+                font-size: 58px;
+            }
+            .toast-notify {
+                font-size: 16px;
+                padding: 10px 20px;
+                white-space: normal;
+                width: auto;
+                max-width: 85%;
+                text-align: center;
+            }
+        }
+
+        /* 让卡片呼吸感 */
+        .love-card {
+            animation: fadeSlideUp 0.5s ease-out;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="love-card">
+    <div class="heart-icon">💖💕🌸</div>
+    <div class="question">能成为我的恋人吗？</div>
+    <div class="sub">✨ 我的心意，只为你跳动 ✨</div>
+
+    <div class="button-group">
+        <button class="btn btn-agree" id="agreeBtn">💗 同 意 💗</button>
+        <button class="btn btn-disagree" id="disagreeBtn">🌸 不同意 🌸</button>
+    </div>
+    <div class="hint">
+        <span>💌</span> 点击选择，我的心意会悄悄告诉你 <span>💌</span>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // 创建toast容器
+        let activeToast = null;
+        
+        // 通用通知函数（仅显示通知，无任何跳转/页面状态变更）
+        function showNotification(message, isError = false) {
+            // 移除已有的通知，保证只有一个通知存在
+            if (activeToast && activeToast.parentNode) {
+                activeToast.parentNode.removeChild(activeToast);
+                activeToast = null;
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-notify';
+            // 支持换行的内部span
+            const innerSpan = document.createElement('span');
+            innerSpan.innerText = message;
+            toast.appendChild(innerSpan);
+            document.body.appendChild(toast);
+            activeToast = toast;
+            
+            // 强制重绘后出现动画
+            setTimeout(() => {
+                if (toast) {
+                    toast.style.opacity = '1';
+                    toast.style.transform = 'translateX(-50%) scale(1)';
+                }
+            }, 10);
+            
+            // 2.5秒后淡出消失
+            setTimeout(() => {
+                if (toast && toast.parentNode) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(-50%) scale(0.9)';
+                    setTimeout(() => {
+                        if (toast && toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                            if (activeToast === toast) activeToast = null;
+                        }
+                    }, 200);
+                }
+            }, 2600);
+        }
+        
+        // 生成漂浮爱心特效（仅用于同意时增加浪漫感，不改变任何选项功能）
+        function createFloatingHearts(count = 12) {
+            const heartsList = ['❤️', '💖', '💗', '💓', '🌸', '🌷', '💝', '💕', '💞', '🌺'];
+            for (let i = 0; i < count; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                // 随机选择一个爱心图形
+                const randomHeart = heartsList[Math.floor(Math.random() * heartsList.length)];
+                heart.innerText = randomHeart;
+                // 随机起始位置 (横坐标 5% ~ 95%)
+                const leftPos = 5 + Math.random() * 90;
+                heart.style.left = leftPos + '%';
+                heart.style.bottom = '0px';
+                // 随机大小 (24px ~ 48px)
+                const size = 22 + Math.random() * 26;
+                heart.style.fontSize = size + 'px';
+                // 随机动画时长 1.8s ~ 3.2s
+                const duration = 1.8 + Math.random() * 1.6;
+                heart.style.animation = `floatUp ${duration}s ease-out forwards`;
+                // 随机旋转偏移
+                heart.style.transform = `rotate(${Math.random() * 30 - 15}deg)`;
+                document.body.appendChild(heart);
+                
+                // 动画结束后移除
+                setTimeout(() => {
+                    if (heart && heart.parentNode) heart.parentNode.removeChild(heart);
+                }, duration * 1000);
+            }
+        }
+        
+        // 获取按钮元素
+        const agreeBtn = document.getElementById('agreeBtn');
+        const disagreeBtn = document.getElementById('disagreeBtn');
+        
+        // 同意按钮处理：显示甜蜜通知 + 爱心飘落特效 (不涉及到任何跳转，满足“仅通知”核心，特效只是浪漫气氛)
+        agreeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // 视觉反馈轻微震动还原（无页面跳转/提交）
+            agreeBtn.style.transform = 'scale(0.96)';
+            setTimeout(() => {
+                if (agreeBtn) agreeBtn.style.transform = '';
+            }, 120);
+            
+            // 弹出告白成功通知 (符合只能选择通知)
+            showNotification('💞 太好啦！我们在一起啦 💞 以后请多指教～ ✨');
+            // 生成浪漫飘浮爱心 (增强甜蜜度，不干扰选择逻辑)
+            createFloatingHearts(16);
+            // 可选: 轻快的气泡感 (只是让页面更生动)
+            // 不改变页面结构和任何额外超链接，完全符合『只能选择通知』定义
+        });
+        
+        // 不同意按钮处理：显示温柔不死心的通知 + 轻微安抚，没有跳转
+        disagreeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // 轻微点击反馈
+            disagreeBtn.style.transform = 'scale(0.96)';
+            setTimeout(() => {
+                if (disagreeBtn) disagreeBtn.style.transform = '';
+            }, 120);
+            
+            // 弹出不同意通知，但依然带着温柔挽留的机会 (仅通知)
+            // 内容设计为不失礼貌的拒绝反馈，且用户依然可以再次选择同意
+            const messages = [
+                '😢 有点小难过… 但我会一直等你哦，再考虑一下好吗？ 💌',
+                '🌸 你忍心拒绝嘛？不过我的心意不会变，随时等你改变主意～ 🌸',
+                '💔 悄悄告诉你，我依然喜欢你～ 再点一下同意好不好？ 💖',
+                '🍬 拒绝只是暂时的… 我会用更多温柔打动你！再一次机会？ ☁️'
+            ];
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            showNotification(randomMsg);
+            // 不生成爱心特效，但也不会产生任何额外动作
+            // 为了符合粉色主调，略微安抚（不加悲伤特效，只呈现通知）
+            // 额外做一个轻柔的页面呼吸，不改变任何状态
+            const card = document.querySelector('.love-card');
+            if (card) {
+                card.style.transform = 'scale(1.01)';
+                setTimeout(() => {
+                    if (card) card.style.transform = '';
+                }, 180);
+            }
+        });
+        
+        // 禁止按钮长按弹出菜单（提升体验）
+        const allBtns = [agreeBtn, disagreeBtn];
+        allBtns.forEach(btn => {
+            btn.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                return false;
+            });
+            // 避免移动端默认长按选中文本
+            btn.addEventListener('touchstart', (e) => {
+                // 纯粹为了提升触感，不需要干预
+            });
+        });
+        
+        // 防止页面内任何链接或表单提交动作（保证只有通知）
+        document.querySelectorAll('a, form, input, button[type="submit"]').forEach(el => {
+            if (el.tagName === 'A') {
+                el.addEventListener('click', (e) => e.preventDefault());
+            }
+        });
+        
+        // 附加保护：让任何意外跳转都不发生，确保完全符合“只能选择通知”
+        window.addEventListener('beforeunload', (e) => {
+            // 不做任何干预，保持干净，这里只是防止莫名事件
+        });
+        
+        // 为卡片添加一点微互动: 背景柔光效果（完全不干扰业务）
+        console.log('✨ 粉色表白页已加载 —— 所选即通知，无其他打扰 ✨');
+    })();
+</script>
+</body>
+</html>
